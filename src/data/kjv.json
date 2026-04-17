@@ -1,0 +1,32 @@
+{
+  "version": "KJV",
+  "books": [
+    {
+      "name": "Genesis",
+      "abbreviation": "Gen",
+      "chapters": [
+        {
+          "chapter": 1,
+          "verses": [
+            { "verse": 1, "text": "In the beginning God created the heaven and the earth." },
+            { "verse": 2, "text": "And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters." },
+            { "verse": 3, "text": "And God said, Let there be light: and there was light." }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Psalms",
+      "abbreviation": "Ps",
+      "chapters": [
+        {
+          "chapter": 23,
+          "verses": [
+            { "verse": 1, "text": "The LORD is my shepherd; I shall not want." },
+            { "verse": 2, "text": "He maketh me to lie down in green pastures: he leadeth me beside the still waters." }
+          ]
+        }
+      ]
+    }
+  ]
+}

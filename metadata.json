@@ -1,0 +1,6 @@
+{
+  "name": "FLYNK",
+  "description": "Social fellowship application for the Adventist Student Fellowship (ASF) FUTO chapter.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}
