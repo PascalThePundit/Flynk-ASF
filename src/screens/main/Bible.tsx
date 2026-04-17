@@ -44,21 +44,31 @@ export const BibleReader: React.FC = () => {
 
       <div className="p-6 pb-24 overflow-y-auto font-serif">
         {tab === 'bible' && (
-          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-bold text-[#0A1628] mb-6 font-display text-center">
-              {selectedBook.name} {selectedChapter.chapter}
-            </h2>
-            <div className="space-y-4">
-              {selectedChapter.verses.map(v => (
-                <p key={v.verse} className="text-gray-800 leading-relaxed text-lg">
-                  <sup className="text-xs font-bold text-[#D4A843] mr-1">{v.verse}</sup>
-                  {v.text}
-                </p>
-              ))}
+          <div className="space-y-6">
+            {/* Daily Verse */}
+            <div className="bg-[#0A1628] p-6 rounded-[2rem] shadow-xl text-center relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-24 h-24 bg-[#D4A843]/10 rounded-bl-full -mr-8 -mt-8" />
+               <div className="relative z-10">
+                 <span className="text-[10px] font-bold text-[#D4A843] uppercase tracking-[0.2em] mb-4 block">Daily Manna</span>
+                 <p className="text-white text-lg leading-relaxed italic mb-4">
+                   "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
+                 </p>
+                 <span className="text-white/40 text-xs font-bold">— John 3:16</span>
+               </div>
             </div>
-            
-            <div className="mt-12 p-4 bg-yellow-50 rounded-2xl border border-yellow-100 text-center">
-              <p className="text-sm font-medium text-[#D4A843]">Displaying truncated trial JSON. Load complete Bible JSON to access all books.</p>
+
+            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-extrabold text-[#0A1628] mb-6 font-display text-center tracking-tight">
+                {selectedBook.name} {selectedChapter.chapter}
+              </h2>
+              <div className="space-y-4">
+                {selectedChapter.verses.map(v => (
+                  <p key={v.verse} className="text-gray-800 leading-relaxed text-lg">
+                    <sup className="text-xs font-bold text-[#D4A843] mr-2">{v.verse}</sup>
+                    {v.text}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         )}

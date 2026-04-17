@@ -4,15 +4,35 @@
       "number": 1,
       "title": "Praise to the Lord",
       "verses": [
-        { "verseNumber": "1", "lines": ["Praise to the Lord, the Almighty, the King of creation!", "O my soul, praise Him, for He is thy health and salvation!"] },
-        { "verseNumber": "2", "lines": ["Praise to the Lord, who o'er all things so wondrously reigneth,", "Shieldeth thee under His wings, yea, so gently sustaineth!"] }
+        { "verseNumber": "1", "lines": ["Praise to the Lord, the Almighty, the King of creation!", "O my soul, praise Him, for He is thy health and salvation!", "All ye who hear, now to His temple draw near;", "Join ye in glad adoration!"] },
+        { "verseNumber": "2", "lines": ["Praise to the Lord, who o'er all things so wondrously reigneth,", "Shieldeth thee under His wings, yea, so gently sustaineth!", "Hast thou not seen how thy desires e'er have been", "Granted in what He ordaineth?"] }
       ]
     },
     {
-      "number": 695,
-      "title": "Call to Worship - Psalm 100",
+      "number": 73,
+      "title": "Holy, Holy, Holy",
       "verses": [
-        { "verseNumber": "R", "lines": ["Leader: Make a joyful noise unto the Lord, all ye lands.", "Congregation: Serve the Lord with gladness: come before his presence with singing."] }
+        { "verseNumber": "1", "lines": ["Holy, holy, holy! Lord God Almighty!", "Early in the morning our song shall rise to Thee;", "Holy, holy, holy, merciful and mighty!", "God in three Persons, blessed Trinity!"] }
+      ]
+    },
+    {
+      "number": 159,
+      "title": "The Old Rugged Cross",
+      "verses": [
+        { "verseNumber": "1", "lines": ["On a hill far away stood an old rugged cross,", "The emblem of suffering and shame;", "And I love that old cross where the dearest and best", "For a world of lost sinners was slain."] },
+        { "verseNumber": "chorus", "lines": ["So I'll cherish the old rugged cross,", "Till my trophies at last I lay down;", "I will cling to the old rugged cross,", "And exchange it some day for a crown."] }
+      ]
+    },
+    {
+      "number": 696,
+      "title": "Call to Worship (Responsive Reading)",
+      "verses": [
+        { "verseNumber": "R", "lines": [
+          "Leader: The Lord is in His holy temple: let all the earth keep silence before Him.",
+          "Congregation: I was glad when they said unto me, Let us go into the house of the Lord.",
+          "Leader: Our help is in the name of the Lord, who made heaven and earth.",
+          "Congregation: O come, let us worship and bow down: let us kneel before the Lord our maker."
+        ] }
       ]
     }
   ]

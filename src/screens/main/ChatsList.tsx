@@ -14,10 +14,19 @@ export const ChatsList: React.FC = () => {
   useEffect(() => {
     // Make sure General Chat exists
     const initGeneralChat = async () => {
-      const ref = doc(db, 'chat_rooms', 'general_chat_room');
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        await setDoc(ref, { id: 'general_chat_room', type: 'general', name: 'General Fellowship', createdAt: Date.now() });
+      try {
+        const ref = doc(db, 'chat_rooms', 'general_chat_room');
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+          await setDoc(ref, { 
+            id: 'general_chat_room', 
+            type: 'general', 
+            name: 'General Fellowship', 
+            createdAt: Date.now() 
+          });
+        }
+      } catch (err) {
+        console.error("Error initializing general chat", err);
       }
     };
     initGeneralChat();
@@ -29,6 +38,8 @@ export const ChatsList: React.FC = () => {
         setForums(snap.docs.map(d => ({ id: d.id, ...d.data() } as Forum)));
       });
       return () => unsub();
+    } else {
+      setForums([]);
     }
   }, [userProfile]);
 

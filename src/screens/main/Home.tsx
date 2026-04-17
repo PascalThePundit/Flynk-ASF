@@ -4,6 +4,9 @@ import { db } from '../../lib/firebase';
 import { Bell, Plus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserBadge } from '../../components/ui/UserBadge';
+import { StoryCreation } from '../../components/ui/StoryCreation';
+import { StoryViewer } from '../../components/ui/StoryViewer';
+import { PostCreation } from '../../components/ui/PostCreation';
 import { formatDistanceToNow } from 'date-fns';
 import type { Post, Story } from '../../types';
 
@@ -12,6 +15,11 @@ export const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [stories, setStories] = useState<Story[]>([]);
   const [groupedStories, setGroupedStories] = useState<Record<string, Story[]>>({});
+  
+  // UI States
+  const [showStoryCreation, setShowStoryCreation] = useState(false);
+  const [showPostCreation, setShowPostCreation] = useState(false);
+  const [viewingUserStories, setViewingUserStories] = useState<{userId: string, userName: string, userAvatar?: string | null} | null>(null);
 
   useEffect(() => {
     // Listen to feed posts
@@ -20,7 +28,7 @@ export const Home: React.FC = () => {
       setPosts(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Post)));
     });
 
-    // Listen to active stories (simplified locally for now: we'll filter out expired clientside)
+    // Listen to active stories
     const sQuery = query(collection(db, 'stories'), orderBy('createdAt', 'desc'));
     const unsubStories = onSnapshot(sQuery, (snap) => {
       const now = Date.now();
@@ -44,6 +52,22 @@ export const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col pb-16">
+      {/* Modals */}
+      {showStoryCreation && (
+        <StoryCreation onClose={() => setShowStoryCreation(false)} />
+      )}
+      {showPostCreation && (
+        <PostCreation onClose={() => setShowPostCreation(false)} />
+      )}
+      {viewingUserStories && groupedStories[viewingUserStories.userId] && (
+        <StoryViewer 
+          stories={groupedStories[viewingUserStories.userId]}
+          userName={viewingUserStories.userName}
+          userAvatar={viewingUserStories.userAvatar}
+          onClose={() => setViewingUserStories(null)}
+        />
+      )}
+
       {/* Header */}
       <div className="bg-white px-4 py-4 flex items-center justify-between sticky top-0 z-20 border-b border-gray-100">
         <h1 className="text-2xl font-bold text-[#0A1628] uppercase tracking-wider" style={{ fontFamily: 'Syne, sans-serif' }}>
@@ -51,7 +75,6 @@ export const Home: React.FC = () => {
         </h1>
         <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
           <Bell className="w-6 h-6 text-[#0A1628]" />
-          {/* Notification dot placeholder */}
           <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
       </div>
@@ -60,8 +83,11 @@ export const Home: React.FC = () => {
       <div className="bg-white py-4 border-b border-gray-100">
         <div className="flex gap-4 overflow-x-auto px-4 snap-x pb-2 scrollbar-hide">
           {/* Create Story Button */}
-          <div className="flex flex-col items-center gap-1 shrink-0 snap-start">
-            <div className="relative w-16 h-16 rounded-full p-[2px] bg-gray-200">
+          <div 
+            onClick={() => setShowStoryCreation(true)}
+            className="flex flex-col items-center gap-1 shrink-0 snap-start cursor-pointer group"
+          >
+            <div className="relative w-16 h-16 rounded-full p-[2px] bg-gray-200 group-hover:bg-[#D4A843] transition-all">
               <div className="w-full h-full rounded-full bg-white border-2 border-white overflow-hidden relative">
                  {userProfile?.avatarUrl ? (
                    <img src={userProfile.avatarUrl} alt="Me" className="w-full h-full object-cover" />
@@ -79,15 +105,22 @@ export const Home: React.FC = () => {
           </div>
 
           {/* Render active story groupings */}
-          {Object.entries(groupedStories).map(([userId, userStories]) => {
+          {Object.entries(groupedStories).map(([userId, stories]) => {
+            const userStories = stories as Story[];
             const latestStory = userStories[0];
-            // Determine if the current user has seen all these stories
-            // We simulate it by checking if our UID is in the viewers array of the latest one
-            const hasSeenAll = userProfile && latestStory.viewers?.includes(userProfile.uid);
+            const hasSeenAll = userProfile && userStories.every(s => s.viewers?.includes(userProfile.uid));
             
             return (
-              <div key={userId} className="flex flex-col items-center gap-1 shrink-0 snap-start cursor-pointer">
-                <div className={`relative w-16 h-16 rounded-full p-[2px] ${hasSeenAll ? 'bg-gray-200' : 'bg-gradient-to-tr from-[#D4A843] to-[#0A1628]'}`}>
+              <div 
+                key={userId} 
+                onClick={() => setViewingUserStories({
+                  userId,
+                  userName: latestStory.userName,
+                  userAvatar: latestStory.userAvatar
+                })}
+                className="flex flex-col items-center gap-1 shrink-0 snap-start cursor-pointer"
+              >
+                <div className={`relative w-16 h-16 rounded-full p-[2px] transition-all duration-500 ${hasSeenAll ? 'bg-gray-200' : 'bg-gradient-to-tr from-[#D4A843] to-[#0A1628]'}`}>
                   <div className="w-full h-full rounded-full bg-white border-2 border-white overflow-hidden bg-gray-100">
                      {latestStory.userAvatar ? (
                        <img src={latestStory.userAvatar} alt={latestStory.userName} className="w-full h-full object-cover" />
@@ -168,7 +201,10 @@ export const Home: React.FC = () => {
       </div>
 
       {/* Floating Create Post Button */}
-      <button className="fixed bottom-20 right-4 w-14 h-14 bg-[#0A1628] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-opacity-90 active:scale-95 transition-all z-30">
+      <button 
+        onClick={() => setShowPostCreation(true)}
+        className="fixed bottom-20 right-4 w-14 h-14 bg-[#0A1628] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-opacity-90 active:scale-95 transition-all z-30"
+      >
         <Plus className="w-6 h-6" />
       </button>
 

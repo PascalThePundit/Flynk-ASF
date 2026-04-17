@@ -27,12 +27,25 @@ import { AllMembers } from './screens/admin/AllMembers';
 // Splash Screen Logic
 const Splash = () => {
   const navigate = useNavigate();
+  const { currentUser, userProfile, loading } = useAuth();
+
   useEffect(() => {
+    if (loading) return;
+
     const timer = setTimeout(() => {
-      navigate('/login');
+      if (!currentUser) {
+        navigate('/login', { replace: true });
+      } else if (!userProfile || !userProfile.formFilled) {
+        // Either profile not loaded yet (but loading is false, meaning doc missing) 
+        // or form not filled - go to form.
+        navigate('/fellowship-form', { replace: true });
+      } else if (userProfile && userProfile.formFilled) {
+        navigate('/', { replace: true });
+      }
     }, 2000);
+
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, currentUser, userProfile, loading]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white">
