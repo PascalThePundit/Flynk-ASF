@@ -12,13 +12,14 @@ import { MainLayout } from './components/MainLayout';
 import { Login } from './screens/auth/Login';
 import { Register } from './screens/auth/Register';
 import { FellowshipForm } from './screens/auth/FellowshipForm';
-
 import { Home } from './screens/main/Home';
 import { ChatsList } from './screens/main/ChatsList';
 import { ChatRoom } from './screens/main/ChatRoom';
 import { BibleReader } from './screens/main/Bible';
 import { Profile } from './screens/main/Profile';
+import { Notifications } from './screens/main/Notifications';
 
+// Admin Screens
 import { AdminDashboard } from './screens/admin/AdminDashboard';
 import { VerifyMembers } from './screens/admin/VerifyMembers';
 import { ManageForums } from './screens/admin/ManageForums';
@@ -79,6 +80,7 @@ export default function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/chats" element={<ChatsList />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/bible" element={<BibleReader />} />
               <Route path="/profile" element={<Profile />} />
               

@@ -102,7 +102,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({ stories, userName, use
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center relative">
+      <div className="flex-1 flex items-center justify-center relative w-full max-w-[450px] mx-auto overflow-hidden">
         {/* Navigation Areas */}
         <div className="absolute inset-0 z-10 flex">
           <div className="w-1/3 h-full cursor-pointer" onClick={handlePrev} />
@@ -110,10 +110,10 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({ stories, userName, use
         </div>
 
         {currentStory.type === 'image' ? (
-          <img src={currentStory.mediaUrl} alt="Story" className="w-full h-full object-cover" />
+          <img src={currentStory.mediaUrl} alt="Story" className="w-full h-full object-cover rounded-md md:rounded-3xl" />
         ) : (
           <div 
-            className="w-full h-full flex items-center justify-center p-12 text-center"
+            className="w-full h-full flex items-center justify-center p-12 text-center rounded-md md:rounded-3xl shadow-2xl"
             style={{ backgroundColor: currentStory.backgroundColor }}
           >
             <h2 className="text-3xl font-extrabold text-white leading-tight font-display">

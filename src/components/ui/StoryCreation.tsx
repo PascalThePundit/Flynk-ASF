@@ -112,9 +112,9 @@ export const StoryCreation: React.FC<StoryCreationProps> = ({ onClose }) => {
         )}
 
         {type === 'text' && (
-          <div className="w-full h-full flex flex-col items-center justify-center relative">
+          <div className="w-full h-full flex flex-col items-center justify-center relative py-10">
             <div 
-              className="w-full aspect-[9/16] max-w-[320px] rounded-[2rem] p-8 flex items-center justify-center text-center shadow-2xl overflow-hidden transition-all duration-500"
+              className="w-full aspect-[9/16] max-w-[280px] md:max-w-[320px] rounded-[2rem] p-8 flex items-center justify-center text-center shadow-2xl overflow-hidden transition-all duration-500"
               style={{ backgroundColor: bgColor }}
             >
               <textarea 
@@ -122,12 +122,12 @@ export const StoryCreation: React.FC<StoryCreationProps> = ({ onClose }) => {
                 onChange={(e) => setTextContent(e.target.value)}
                 placeholder="What's on your mind?"
                 maxLength={200}
-                className="w-full bg-transparent border-none outline-none text-white text-2xl font-bold placeholder:text-white/30 text-center resize-none h-auto"
+                className="w-full bg-transparent border-none outline-none text-white text-xl md:text-2xl font-bold placeholder:text-white/30 text-center resize-none h-auto"
                 style={{ height: 'auto' }}
               />
             </div>
             
-            <div className="flex gap-3 mt-8 overflow-x-auto w-full max-w-sm px-4 pb-2 scrollbar-hide">
+            <div className="flex gap-3 mt-8 overflow-x-auto w-full max-w-sm px-4 pb-2 scrollbar-hide justify-center">
               {colors.map(c => (
                 <button 
                   key={c}

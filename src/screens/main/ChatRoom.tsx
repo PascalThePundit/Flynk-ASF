@@ -158,7 +158,7 @@ export const ChatRoom: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#F8F9FA]">
+    <div className="flex flex-col h-full bg-[#F8F9FA] relative">
       {/* Header */}
       <div className="bg-white px-4 py-4 sticky top-0 z-20 border-b border-gray-100 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ export const ChatRoom: React.FC = () => {
       </div>
 
       {/* Message Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {messages.map(msg => {
           const isMine = msg.senderId === currentUser?.uid;
           return (
@@ -212,7 +212,7 @@ export const ChatRoom: React.FC = () => {
       </div>
 
       {/* Input Area */}
-      <div className="absolute bottom-0 w-full bg-white border-t border-gray-100 p-4 pb-6">
+      <div className="sticky bottom-0 w-full bg-white border-t border-gray-100 p-4 pb-10 md:pb-6 z-20">
         {isRecording ? (
           <div className="flex items-center justify-between bg-[#F8F9FA] rounded-full py-3 px-5 transition-all animate-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3">

@@ -24,13 +24,13 @@ export const AllMembers: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
-      <div className="bg-white border-b border-gray-100 p-4 pt-8 sticky top-0 z-10 shadow-sm">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col pb-24 md:pb-8">
+      <div className="bg-white border-b border-gray-100 p-4 pt-8 sticky top-0 z-10 shadow-sm md:rounded-t-[2.5rem] md:mt-6 md:hidden">
         <div className="flex items-center gap-3 mb-4">
           <Link to="/admin" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <ArrowLeft className="w-5 h-5 text-[#0A1628]" />
           </Link>
-          <h1 className="text-xl font-extrabold text-[#0A1628] font-display">Directory Directory</h1>
+          <h1 className="text-xl font-extrabold text-[#0A1628] font-display">Directory</h1>
         </div>
         
         <div className="relative">

@@ -56,45 +56,45 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="bg-white border-b border-gray-100 p-6 pt-10 sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 flex flex-col pb-24 md:pb-8">
+      <div className="bg-white border-b border-gray-100 p-6 pt-10 sticky top-0 z-10 md:rounded-t-[2.5rem] md:mt-6 md:hidden">
         <h1 className="text-2xl font-bold text-[#0A1628]">Admin Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">Manage fellowship operations</p>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 md:mt-6">
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-50">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-blue-50 rounded-lg"><Users className="w-4 h-4 text-blue-600" /></div>
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total</span>
+              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Total</span>
             </div>
-            <div className="text-3xl font-bold text-[#0A1628]">{stats.totalMembers}</div>
+            <div className="text-2xl font-bold text-[#0A1628]">{stats.totalMembers}</div>
           </div>
           
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-50">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-yellow-50 rounded-lg"><ShieldCheck className="w-4 h-4 text-[#D4A843]" /></div>
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Verified</span>
+              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Verified</span>
             </div>
-            <div className="text-3xl font-bold text-[#0A1628]">{stats.verifiedGold}</div>
+            <div className="text-2xl font-bold text-[#0A1628]">{stats.verifiedGold}</div>
           </div>
 
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-50">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-gray-100 rounded-lg"><Clock className="w-4 h-4 text-gray-500" /></div>
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pending</span>
+              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Pending</span>
             </div>
-            <div className="text-3xl font-bold text-[#0A1628]">{stats.pendingGrey}</div>
+            <div className="text-2xl font-bold text-[#0A1628]">{stats.pendingGrey}</div>
           </div>
 
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-50">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-purple-50 rounded-lg"><Layers className="w-4 h-4 text-purple-600" /></div>
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Forums</span>
+              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Forums</span>
             </div>
-            <div className="text-3xl font-bold text-[#0A1628]">{stats.totalForums}</div>
+            <div className="text-2xl font-bold text-[#0A1628]">{stats.totalForums}</div>
           </div>
         </div>
 

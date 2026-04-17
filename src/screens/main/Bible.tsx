@@ -9,8 +9,8 @@ export const BibleReader: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
-      <div className="bg-white px-6 py-6 pb-0 sticky top-0 z-20 border-b border-gray-100">
-        <h1 className="text-3xl font-extrabold text-[#0A1628] font-display tracking-tight mb-4">Library</h1>
+      <div className="bg-white px-6 py-6 pb-0 sticky top-0 z-20 border-b border-gray-100 md:rounded-t-[2.5rem] md:mt-6">
+        <h1 className="text-3xl font-extrabold text-[#0A1628] font-display tracking-tight mb-4 md:hidden">Library</h1>
         
         <div className="flex gap-6 border-b border-gray-100">
           <button 
@@ -42,7 +42,7 @@ export const BibleReader: React.FC = () => {
         )}
       </div>
 
-      <div className="p-6 pb-24 overflow-y-auto font-serif">
+      <div className="p-4 md:p-6 pb-24 overflow-y-auto font-serif">
         {tab === 'bible' && (
           <div className="space-y-6">
             {/* Daily Verse */}

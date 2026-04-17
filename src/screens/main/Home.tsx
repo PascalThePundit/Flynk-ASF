@@ -6,8 +6,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { UserBadge } from '../../components/ui/UserBadge';
 import { StoryCreation } from '../../components/ui/StoryCreation';
 import { StoryViewer } from '../../components/ui/StoryViewer';
-import { PostCreation } from '../../components/ui/PostCreation';
 import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 import type { Post, Story } from '../../types';
 
 export const Home: React.FC = () => {
@@ -18,7 +18,6 @@ export const Home: React.FC = () => {
   
   // UI States
   const [showStoryCreation, setShowStoryCreation] = useState(false);
-  const [showPostCreation, setShowPostCreation] = useState(false);
   const [viewingUserStories, setViewingUserStories] = useState<{userId: string, userName: string, userAvatar?: string | null} | null>(null);
 
   useEffect(() => {
@@ -51,14 +50,12 @@ export const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-16">
+    <div className="min-h-screen bg-gray-50 flex flex-col pb-16 md:pb-8">
       {/* Modals */}
       {showStoryCreation && (
         <StoryCreation onClose={() => setShowStoryCreation(false)} />
       )}
-      {showPostCreation && (
-        <PostCreation onClose={() => setShowPostCreation(false)} />
-      )}
+      
       {viewingUserStories && groupedStories[viewingUserStories.userId] && (
         <StoryViewer 
           stories={groupedStories[viewingUserStories.userId]}
@@ -68,19 +65,19 @@ export const Home: React.FC = () => {
         />
       )}
 
-      {/* Header */}
-      <div className="bg-white px-4 py-4 flex items-center justify-between sticky top-0 z-20 border-b border-gray-100">
+      {/* Header (Mobile Only) */}
+      <div className="md:hidden bg-white px-4 py-4 flex items-center justify-between sticky top-0 z-20 border-b border-gray-100">
         <h1 className="text-2xl font-bold text-[#0A1628] uppercase tracking-wider" style={{ fontFamily: 'Syne, sans-serif' }}>
           FLYNK
         </h1>
-        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
+        <Link to="/notifications" className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
           <Bell className="w-6 h-6 text-[#0A1628]" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        </Link>
       </div>
 
       {/* Stories Bar */}
-      <div className="bg-white py-4 border-b border-gray-100">
+      <div className="bg-white py-4 border-b border-gray-100 md:rounded-t-[2.5rem] md:mt-6">
         <div className="flex gap-4 overflow-x-auto px-4 snap-x pb-2 scrollbar-hide">
           {/* Create Story Button */}
           <div 
@@ -141,7 +138,7 @@ export const Home: React.FC = () => {
       </div>
 
       {/* Main Feed */}
-      <div className="flex-1 space-y-4 pt-2">
+      <div className="flex-1 space-y-4 pt-2 md:pt-4">
         {posts.length === 0 ? (
           <div className="text-center py-20 px-6">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -152,7 +149,7 @@ export const Home: React.FC = () => {
           </div>
         ) : (
           posts.map(post => (
-            <div key={post.id} className="bg-white border-y border-gray-100 py-4">
+            <div key={post.id} className="bg-white md:rounded-[2rem] border-y md:border border-gray-100 py-4 shadow-sm">
               {/* Post Header */}
               <div className="flex items-center px-4 mb-3">
                 <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden shrink-0 mr-3">
@@ -177,8 +174,8 @@ export const Home: React.FC = () => {
 
               {/* Post Content */}
               {post.mediaUrl ? (
-                <div className="w-full bg-gray-50 aspect-square mb-3">
-                  <img src={post.mediaUrl} alt="Post media" className="w-full h-full object-cover" />
+                <div className="w-full bg-gray-50 aspect-square md:aspect-video mb-3 md:rounded-xl md:px-4">
+                  <img src={post.mediaUrl} alt="Post media" className="w-full h-full object-cover md:rounded-xl" />
                 </div>
               ) : null}
               
@@ -200,14 +197,13 @@ export const Home: React.FC = () => {
         )}
       </div>
 
-      {/* Floating Create Post Button */}
+      {/* Floating Create Post Button (Mobile Only) */}
       <button 
-        onClick={() => setShowPostCreation(true)}
-        className="fixed bottom-20 right-4 w-14 h-14 bg-[#0A1628] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-opacity-90 active:scale-95 transition-all z-30"
+        onClick={() => setShowStoryCreation(true)} // Note: Changing this to story creation for variety or can be post
+        className="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-[#0A1628] text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-[#D4A843] active:scale-95 transition-all z-30"
       >
         <Plus className="w-6 h-6" />
       </button>
-
     </div>
   );
 };
