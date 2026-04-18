@@ -6,6 +6,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoutes';
 import { MainLayout } from './components/MainLayout';
 
@@ -49,17 +50,18 @@ const Splash = () => {
   }, [navigate, currentUser, userProfile, loading]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white">
-      <h1 className="text-5xl font-extrabold text-[#0A1628] uppercase tracking-widest animate-pulse font-display" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-[#0D1117]">
+      <h1 className="text-5xl font-extrabold text-[#0A1628] dark:text-gray-100 uppercase tracking-widest animate-pulse font-display" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
         FLYNK
       </h1>
-      <p className="text-gray-400 font-bold tracking-widest mt-2 uppercase text-xs">ASF FUTO</p>
+      <p className="text-gray-400 dark:text-gray-500 font-bold tracking-widest mt-2 uppercase text-xs">ASF FUTO</p>
     </div>
   );
 };
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -102,5 +104,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   );
 }
