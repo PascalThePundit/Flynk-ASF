@@ -21,7 +21,7 @@ export const AdminDashboard: React.FC = () => {
       let total = 0, gold = 0, grey = 0, newUsers = 0;
       const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
       snap.forEach(d => {
-        const u = d.data() as UserProfile;
+        const u = d.data({ serverTimestamps: 'estimate' }) as UserProfile;
         total++;
         if (u.badgeStatus === 'gold') gold++;
         if (u.badgeStatus === 'grey') grey++;
@@ -31,10 +31,14 @@ export const AdminDashboard: React.FC = () => {
         if (ts > oneWeekAgo) newUsers++;
       });
       setStats(p => ({ ...p, totalMembers: total, verifiedGold: gold, pendingGrey: grey, newThisWeek: newUsers }));
+    }, (error) => {
+      console.error("AdminDashboard users listener error:", error);
     });
 
     const unsub2 = onSnapshot(collection(db, 'forums'), snap => {
       setStats(p => ({ ...p, totalForums: snap.size }));
+    }, (error) => {
+      console.error("AdminDashboard forums listener error:", error);
     });
 
     return () => { unsub1(); unsub2(); };

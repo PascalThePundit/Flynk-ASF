@@ -12,7 +12,9 @@ export const AllMembers: React.FC = () => {
 
   useEffect(() => {
     const unsub = onSnapshot(query(collection(db, 'users')), snapshot => {
-      setUsers(snapshot.docs.map(d => d.data() as UserProfile));
+      setUsers(snapshot.docs.map(d => d.data({ serverTimestamps: 'estimate' }) as UserProfile));
+    }, (error) => {
+      console.error("AllMembers listener error:", error);
     });
     return () => unsub();
   }, []);

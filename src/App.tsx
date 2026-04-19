@@ -38,23 +38,49 @@ const Splash = () => {
       if (!currentUser) {
         navigate('/login', { replace: true });
       } else if (!userProfile || !userProfile.formFilled) {
-        // Either profile not loaded yet (but loading is false, meaning doc missing) 
-        // or form not filled - go to form.
         navigate('/fellowship-form', { replace: true });
       } else if (userProfile && userProfile.formFilled) {
         navigate('/', { replace: true });
       }
-    }, 2000);
+    }, 2800); // Slightly longer for premium reveal
 
     return () => clearTimeout(timer);
   }, [navigate, currentUser, userProfile, loading]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-[#0D1117]">
-      <h1 className="text-5xl font-extrabold text-[#0A1628] dark:text-gray-100 uppercase tracking-widest animate-pulse font-display" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
-        FLYNK
-      </h1>
-      <p className="text-gray-400 dark:text-gray-500 font-bold tracking-widest mt-2 uppercase text-xs">ASF FUTO</p>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#F2F2F7] dark:bg-[#000000] overflow-hidden relative">
+      {/* Decorative Blur Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold/10 blur-[120px] rounded-full" />
+      
+      <div className="relative z-10 flex flex-col items-center animate-reveal">
+        <div className="w-24 h-24 bg-white dark:bg-[#1C1C1E] rounded-[2rem] shadow-2xl flex items-center justify-center mb-8 animate-float">
+          <span className="text-4xl font-extrabold text-brand tracking-tighter" style={{ fontFamily: 'Syne, sans-serif' }}>F</span>
+        </div>
+        
+        <h1 className="text-6xl font-extrabold text-navy dark:text-white uppercase tracking-[0.25em] font-logo mb-3">
+          FLYNK
+        </h1>
+        <div className="flex items-center gap-3">
+          <div className="h-px w-8 bg-gray-300 dark:bg-gray-800" />
+          <p className="text-gray-400 dark:text-gray-500 font-bold tracking-[0.4em] uppercase text-[10px]">ASF FUTO</p>
+          <div className="h-px w-8 bg-gray-300 dark:bg-gray-800" />
+        </div>
+      </div>
+
+      {/* Loading Indicator */}
+      <div className="absolute bottom-16 flex flex-col items-center gap-4">
+        <div className="flex gap-1">
+          {[0, 1, 2].map((i) => (
+            <div 
+              key={i} 
+              className="w-1.5 h-1.5 bg-brand rounded-full animate-bounce" 
+              style={{ animationDelay: `${i * 0.15}s` }} 
+            />
+          ))}
+        </div>
+        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest opacity-50">Initializing Core</p>
+      </div>
     </div>
   );
 };

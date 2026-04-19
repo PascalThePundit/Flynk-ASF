@@ -13,8 +13,10 @@ export const VerifyMembers: React.FC = () => {
 
   useEffect(() => {
     const unsub = onSnapshot(query(collection(db, 'users')), snapshot => {
-      const u = snapshot.docs.map(d => d.data() as UserProfile).filter(user => user.formFilled);
+      const u = snapshot.docs.map(d => d.data({ serverTimestamps: 'estimate' }) as UserProfile).filter(user => user.formFilled);
       setUsers(u);
+    }, (error) => {
+      console.error("VerifyMembers listener error:", error);
     });
     return () => unsub();
   }, []);

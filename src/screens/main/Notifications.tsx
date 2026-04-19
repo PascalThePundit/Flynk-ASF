@@ -24,7 +24,16 @@ export const Notifications: React.FC = () => {
       orderBy('createdAt', 'desc')
     );
     const unsub = onSnapshot(q, snap => {
-      setNotifications(snap.docs.map(d => ({ id: d.id, ...d.data() } as AppNotification)));
+      setNotifications(snap.docs.map(d => {
+        const data = d.data({ serverTimestamps: 'estimate' });
+        return { 
+          id: d.id, 
+          ...data,
+          createdAt: data.createdAt?.toMillis?.() || Date.now()
+        } as AppNotification;
+      }));
+    }, (error) => {
+      console.error("Notifications listener error:", error);
     });
     return () => unsub();
   }, [currentUser]);

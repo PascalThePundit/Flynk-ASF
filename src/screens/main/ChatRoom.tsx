@@ -7,7 +7,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { ArrowLeft, Send, Mic, X, Loader2, Users } from 'lucide-react';
+import { ArrowLeft, Send, Mic, X, Loader2, Users, Info } from 'lucide-react';
 import { UserBadge } from '../../components/ui/UserBadge';
 import { VoiceMessage } from '../../components/ui/VoiceMessage';
 import { cn } from '../../lib/utils';
@@ -39,8 +39,13 @@ export const ChatRoom: React.FC = () => {
 
     const q = query(collection(db, `chat_rooms/${roomId}/messages`), orderBy('createdAt', 'asc'));
     return onSnapshot(q, snap => {
-      setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
+      setMessages(snap.docs.map(d => {
+        const data = d.data({ serverTimestamps: 'estimate' });
+        return { id: d.id, ...data };
+      }));
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    }, (error) => {
+      console.error("ChatRoom listener error:", error);
     });
   }, [roomId]);
 
@@ -66,14 +71,12 @@ export const ChatRoom: React.FC = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       const chunks: Blob[] = [];
-
-      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.ondataavailable = e => chunks.push(e.data);
       recorder.onstop = async () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         await uploadVoiceNote(blob);
         stream.getTracks().forEach(t => t.stop());
       };
-
       setMediaRecorder(recorder);
       recorder.start();
       setIsRecording(true);
@@ -84,22 +87,6 @@ export const ChatRoom: React.FC = () => {
     }
   };
 
-  const stopRecording = () => {
-    mediaRecorder?.stop();
-    setIsRecording(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-  };
-
-  const cancelRecording = () => {
-    if (mediaRecorder) {
-      mediaRecorder.onstop = null;
-      mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach(t => t.stop());
-    }
-    setIsRecording(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-  };
-
   const uploadVoiceNote = async (blob: Blob) => {
     if (!currentUser || !userProfile || !roomId) return;
     setIsUploading(true);
@@ -108,175 +95,123 @@ export const ChatRoom: React.FC = () => {
       const snap = await uploadBytes(storageRef, blob);
       const url = await getDownloadURL(snap.ref);
       await addDoc(collection(db, `chat_rooms/${roomId}/messages`), {
-        roomId,
-        senderId: currentUser.uid,
-        senderName: userProfile.name,
-        senderAvatar: userProfile.avatarUrl,
-        senderBadgeStatus: userProfile.badgeStatus,
-        mediaUrl: url,
-        type: 'voice',
-        duration: recordingTime,
-        createdAt: serverTimestamp(),
+        roomId, senderId: currentUser.uid, senderName: userProfile.name,
+        senderAvatar: userProfile.avatarUrl, senderBadgeStatus: userProfile.badgeStatus,
+        mediaUrl: url, type: 'voice', duration: recordingTime, createdAt: serverTimestamp(),
       });
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     } finally {
       setIsUploading(false);
     }
   };
 
-  const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-
-  const shouldShowSender = (i: number) => {
-    if (i === 0) return true;
-    return messages[i].senderId !== messages[i - 1].senderId;
-  };
-
   return (
-    <div className="flex flex-col h-screen bg-[#F8F9FA] dark:bg-[#0D1117]">
-      {/* ── Header ── */}
-      <div className="bg-white dark:bg-[#161B22] px-4 py-3.5 border-b border-gray-100 dark:border-gray-800 flex items-center gap-3 shadow-sm sticky top-0 z-20">
-        <Link
-          to="/chats"
-          className="w-9 h-9 rounded-full hover:bg-gray-50 dark:hover:bg-[#1C2128] flex items-center justify-center transition shrink-0"
-        >
-          <ArrowLeft size={20} className="text-[#0A1628] dark:text-gray-100" />
+    <div className="flex flex-col h-screen bg-[#F2F2F7] dark:bg-black animate-reveal">
+      {/* Premium iOS Header */}
+      <div className="glass px-4 py-4 border-b border-white/20 flex items-center gap-3 sticky top-0 z-30">
+        <Link to="/chats" className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition active-scale">
+          <ArrowLeft size={20} className="text-navy dark:text-white" />
         </Link>
 
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0A1628] to-[#1a2f4e] flex items-center justify-center shrink-0">
-          <Users size={16} className="text-[#D4A843]" />
+        <div className="w-10 h-10 rounded-[1.2rem] bg-gradient-to-tr from-brand to-navy flex items-center justify-center shrink-0 shadow-lg">
+          <Users size={18} className="text-white" />
         </div>
 
         <div className="flex-1 min-w-0">
-          <h2 className="font-extrabold text-[#0A1628] dark:text-gray-100 text-base font-display truncate">{roomName}</h2>
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">ASF FUTO</p>
+          <h2 className="font-black text-navy dark:text-white text-base tracking-tight truncate">{roomName}</h2>
+          <div className="flex items-center gap-1.5">
+             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+             <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Session</span>
+          </div>
         </div>
+
+        <button className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-brand transition active-scale">
+          <Info size={20} />
+        </button>
       </div>
 
-      {/* ── Messages ── */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center py-16">
-            <div className="w-16 h-16 rounded-full bg-white dark:bg-[#161B22] flex items-center justify-center mb-3 shadow-sm border border-gray-100 dark:border-gray-800">
-              <Users size={24} className="text-gray-200 dark:text-gray-700" />
-            </div>
-            <p className="text-sm font-bold text-gray-400 dark:text-gray-500">No messages yet</p>
-            <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">Be the first to say something 👋</p>
-          </div>
-        )}
-
+      {/* Message List */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
         {messages.map((msg, i) => {
           const isMine = msg.senderId === currentUser?.uid;
-          const showSender = !isMine && shouldShowSender(i);
-          const ts = msg.createdAt?.toDate?.() ?? null;
+          const showSender = !isMine && (i === 0 || messages[i-1].senderId !== msg.senderId);
+          const ts = msg.createdAt?.toDate?.() || null;
 
           return (
-            <div key={msg.id} className={cn('flex', isMine ? 'justify-end' : 'justify-start', showSender ? 'mt-4' : 'mt-0.5')}>
-              <div className={cn('flex items-end gap-2 max-w-[78%]', isMine ? 'flex-row-reverse' : 'flex-row')}>
-                {/* Avatar */}
+            <div key={msg.id} className={cn('flex flex-col animate-reveal', isMine ? 'items-end' : 'items-start')}>
+              {showSender && (
+                <div className="flex items-center gap-1.5 mb-1 mt-3 px-1">
+                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">{msg.senderName}</span>
+                   <UserBadge status={msg.senderBadgeStatus} size={10} />
+                </div>
+              )}
+              
+              <div className={cn('flex items-end gap-2 max-w-[85%]', isMine && 'flex-row-reverse')}>
                 {!isMine && (
-                  <div className={cn('w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shrink-0', showSender ? 'opacity-100' : 'opacity-0')}>
-                    {msg.senderAvatar ? (
-                      <img src={msg.senderAvatar} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[10px] font-extrabold text-gray-400 dark:text-gray-500">
-                        {msg.senderName?.charAt(0)}
-                      </div>
-                    )}
+                  <div className={cn('w-7 h-7 rounded-lg overflow-hidden shrink-0 border border-white', !showSender && 'opacity-0')}>
+                    {msg.senderAvatar ? <img src={msg.senderAvatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-200" />}
                   </div>
                 )}
-
-                <div className={cn('flex flex-col', isMine ? 'items-end' : 'items-start')}>
-                  {showSender && (
-                    <div className="flex items-center gap-1 mb-1 px-1">
-                      <span className="text-[11px] font-extrabold text-gray-500 dark:text-gray-400">{msg.senderName}</span>
-                      <UserBadge status={msg.senderBadgeStatus || 'none'} />
-                    </div>
-                  )}
-
-                  <div className={cn(
-                    'text-sm shadow-sm overflow-hidden transition-all',
-                    isMine
-                      ? 'bg-[#0A1628] dark:bg-[#D4A843] text-white dark:text-[#0A1628] rounded-2xl rounded-br-md'
-                      : 'bg-white dark:bg-[#1C2128] text-[#0A1628] dark:text-gray-100 border border-gray-100 dark:border-gray-700 rounded-2xl rounded-bl-md',
-                    msg.type === 'voice' ? 'p-1.5' : 'px-4 py-2.5'
-                  )}>
-                    {msg.type === 'voice' ? (
-                      <VoiceMessage url={msg.mediaUrl} isMine={isMine} />
-                    ) : (
-                      <span className="leading-relaxed whitespace-pre-wrap">{msg.content}</span>
-                    )}
-                  </div>
-
-                  {ts && (
-                    <span className="text-[9px] text-gray-300 dark:text-gray-600 font-medium mt-0.5 px-1">
-                      {formatDistanceToNow(ts, { addSuffix: true })}
-                    </span>
-                  )}
+                
+                <div className={cn(
+                  'px-4 py-2.5 shadow-sm text-sm font-medium',
+                  isMine 
+                    ? 'bg-brand text-white rounded-[1.5rem] rounded-tr-none' 
+                    : 'bg-white dark:bg-white/10 text-navy dark:text-white rounded-[1.5rem] rounded-tl-none border border-black/5 dark:border-white/5',
+                  msg.type === 'voice' && 'p-1.5'
+                )}>
+                  {msg.type === 'voice' ? <VoiceMessage url={msg.mediaUrl} isMine={isMine} /> : <p className="leading-relaxed">{msg.content}</p>}
                 </div>
               </div>
+              
+              {ts && <span className="text-[8px] font-bold text-gray-400 mt-1 px-1 opacity-60">{formatDistanceToNow(ts, { addSuffix: true })}</span>}
             </div>
           );
         })}
-        <div ref={bottomRef} className="h-1" />
+        <div ref={bottomRef} className="h-4" />
       </div>
 
-      {/* ── Input ── */}
-      <div className="bg-white dark:bg-[#161B22] border-t border-gray-100 dark:border-gray-800 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        {isRecording ? (
-          <div className="flex items-center gap-3 bg-[#F8F9FA] dark:bg-[#1C2128] rounded-full px-5 py-3">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0" />
-            <span className="text-sm font-extrabold text-[#0A1628] dark:text-gray-100 tabular-nums">{fmt(recordingTime)}</span>
-            <div className="flex-1 flex gap-0.5 items-center overflow-hidden">
-              {Array.from({ length: 20 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex-1 bg-[#D4A843] rounded-full opacity-60 animate-pulse"
-                  style={{ height: `${6 + Math.sin(i * 0.8) * 8}px`, animationDelay: `${i * 0.05}s` }}
-                />
-              ))}
-            </div>
-            <button onClick={cancelRecording} className="p-1.5 text-gray-400 hover:text-red-500 transition shrink-0">
-              <X size={18} />
-            </button>
-            <button
-              onClick={stopRecording}
-              className="w-10 h-10 rounded-full bg-[#D4A843] text-white flex items-center justify-center shadow-md shrink-0 active:scale-90 transition"
-            >
-              <Send size={16} className="ml-0.5" />
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSend} className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={isUploading ? undefined : startRecording}
-              className={cn(
-                'w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 shrink-0',
-                isUploading
-                  ? 'bg-gray-50 dark:bg-[#1C2128] text-[#D4A843]'
-                  : 'bg-[#F8F9FA] dark:bg-[#1C2128] text-gray-400 dark:text-gray-500 hover:text-[#D4A843]'
-              )}
-            >
-              {isUploading ? <Loader2 size={20} className="animate-spin" /> : <Mic size={20} />}
-            </button>
+      {/* Floating Input Bar */}
+      <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="glass px-2 py-2 rounded-[2rem] border border-white/40 dark:border-white/5 shadow-2xl flex items-center gap-2">
+          <button 
+            type="button" 
+            onMouseDown={startRecording}
+            onMouseUp={() => { mediaRecorder?.stop(); setIsRecording(false); if (timerRef.current) clearInterval(timerRef.current); }}
+            className={cn(
+              "w-11 h-11 rounded-full flex items-center justify-center transition-all active-scale",
+              isRecording ? "bg-red-500 text-white animate-pulse shadow-lg" : "text-gray-400 hover:text-brand"
+            )}
+          >
+            {isUploading ? <Loader2 className="animate-spin" size={20} /> : <Mic size={22} />}
+          </button>
 
-            <input
+          {isRecording ? (
+             <div className="flex-1 flex items-center gap-3 px-4">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-xs font-black text-navy dark:text-white tabular-nums">Recording {recordingTime}s</span>
+                <div className="flex-1 h-1 bg-brand/10 rounded-full overflow-hidden">
+                   <div className="h-full bg-brand animate-reveal" style={{ width: `${(recordingTime % 10) * 10}%` }} />
+                </div>
+             </div>
+          ) : (
+            <input 
               type="text"
               value={newMessage}
               onChange={e => setNewMessage(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSend(e as any)}
               placeholder="Message..."
-              className="flex-1 bg-[#F8F9FA] dark:bg-[#1C2128] rounded-full py-3 px-5 text-sm font-medium text-[#0A1628] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:ring-2 focus:ring-[#D4A843]/40 transition-all"
+              className="flex-1 bg-transparent border-none outline-none px-3 text-sm font-bold text-navy dark:text-white placeholder:text-gray-400"
             />
+          )}
 
-            <button
-              type="submit"
-              disabled={!newMessage.trim()}
-              className="w-11 h-11 rounded-full bg-[#D4A843] text-white flex items-center justify-center disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 dark:disabled:text-gray-600 transition-all active:scale-90 shadow-md shadow-[#D4A843]/20 shrink-0"
-            >
-              <Send size={18} className="ml-0.5" />
-            </button>
-          </form>
-        )}
+          <button 
+            onClick={handleSend}
+            disabled={!newMessage.trim() && !isRecording}
+            className="w-11 h-11 rounded-full bg-brand text-white flex items-center justify-center shadow-lg shadow-brand/20 active-scale disabled:opacity-30 disabled:grayscale transition-all"
+          >
+            <Send size={18} strokeWidth={3} />
+          </button>
+        </div>
       </div>
     </div>
   );

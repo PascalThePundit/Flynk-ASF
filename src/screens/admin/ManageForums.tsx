@@ -14,10 +14,14 @@ export const ManageForums: React.FC = () => {
 
   useEffect(() => {
     const unsubForums = onSnapshot(query(collection(db, 'forums')), snap => {
-      setForums(snap.docs.map(d => ({ id: d.id, ...d.data() } as Forum)));
+      setForums(snap.docs.map(d => ({ id: d.id, ...d.data({ serverTimestamps: 'estimate' }) } as Forum)));
+    }, (error) => {
+      console.error("ManageForums forums listener error:", error);
     });
     const unsubUsers = onSnapshot(query(collection(db, 'users')), snap => {
-      setUsers(snap.docs.map(d => d.data() as UserProfile));
+      setUsers(snap.docs.map(d => d.data({ serverTimestamps: 'estimate' }) as UserProfile));
+    }, (error) => {
+      console.error("ManageForums users listener error:", error);
     });
     return () => { unsubForums(); unsubUsers(); };
   }, []);

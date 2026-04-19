@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-/* Class-based dark mode for Tailwind v4 */
+/* iOS 26 & Premium Social Design System */
 @variant dark (&:is(.dark *));
 
 @theme {
@@ -9,77 +9,80 @@
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-logo: "Syne", ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand: #0A1628;
-  --color-gold: #D4A843;
-  --color-surface: #F8F9FA;
+  --color-brand: #007AFF; /* Apple System Blue */
+  --color-gold: #FFD700;  /* Premium Gold */
+  --color-navy: #001A33;  /* Deep Professional Navy */
+  --color-surface: #F2F2F7; /* iOS System Gray 6 */
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
-}
-
-html {
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #F8F9FA;
-  color: #0A1628;
+  background-color: #F2F2F7;
+  color: #1C1C1E;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-html.dark {
-  color-scheme: dark;
+/* Glassmorphism Mastery */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.dark body {
-  background-color: #0D1117;
-  color: #E6EDF3;
+.dark .glass {
+  background: rgba(28, 28, 30, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Hide scrollbar for horizontal story bars */
+.glass-dark {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* iOS 26 Rounded Corners (Squircle Style) */
+.rounded-ios { border-radius: 2.5rem; }
+.rounded-ios-inner { border-radius: 1.5rem; }
+
+/* Custom Scrollbar */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Smooth page transitions */
-.page-enter {
-  animation: fadeSlideIn 0.25s ease forwards;
-}
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Animations */
+@keyframes ios-reveal {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Avatar generation shimmer */
-@keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-.shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 800px 100%;
-  animation: shimmer 1.4s infinite;
-}
-.dark .shimmer {
-  background: linear-gradient(90deg, #21262D 25%, #30363D 50%, #21262D 75%);
-  background-size: 800px 100%;
+.animate-reveal {
+  animation: ios-reveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* Gold glow for verified avatar ring */
-.avatar-gold-ring {
-  box-shadow: 0 0 0 3px #D4A843, 0 0 16px 2px rgba(212,168,67,0.25);
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+/* Interactive States */
+.active-scale { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+.active-scale:active { transform: scale(0.96); }
+
+/* Premium Gold Glow */
+.gold-glow {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
-/* Story ring gradient */
-.story-ring {
-  background: conic-gradient(#D4A843, #0A1628, #D4A843);
-}
-
-/* Spinning sparkles for AI generation state */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.spin-slow { animation: spin-slow 2s linear infinite; }
+/* Page transitions */
+.page-transition-enter { opacity: 0; transform: translateX(20px); }
+.page-transition-enter-active { opacity: 1; transform: translateX(0); transition: all 300ms ease-out; }
